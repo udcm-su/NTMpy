@@ -38,6 +38,6 @@ The equation under consideration is:
    | <img src="https://github.com/udcm-su/heat-diffusion-1D/blob/Developer/Pictures/SroSto.PNG" width="320" height="200" />     |   
        
   
-  
+  .
  
  
