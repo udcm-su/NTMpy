@@ -12,7 +12,7 @@ The equation under consideration is:
  
  where *C* = heat capacity, *k* = conductivity, *G* is the coupling constant between the two systems (Electron and Lattice)
   <img src="https://github.com/udcm-su/heat-diffusion-1D/blob/Developer/Pictures/phiE.png" width="30" height="20" /> and <img src="https://github.com/udcm-su/heat-diffusion-1D/blob/Developer/Pictures/phiL.png" width="30" height="20" /> 
-  are the respective temperatures of the electron and the lattice system with respect to space *x* and time *t* .
+  are the respective temperatures of the electron and the lattice system with respect to space *x* and time *t*. The super letters *L* and *E* indicate wether a parameter belongs to the electron or lattice system and the sub index *i* denotes to which layer the parameter belongs.
 
  Our approach is to use a combination of **finite elements** (B-Splines) to approximate the derivation in space and **Explicit Euler** to approximate the evolution in time.
  To stay within the **stability** region of the Explicit Euler algorithm, a well suited time step is automatically computed.
