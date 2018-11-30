@@ -9,7 +9,7 @@ We look at two cases:
 Dependencies: Numpy, Matplotlib, B-Spline Package, (SI- units package)
 @author: Lukas Alber & Valentino Scalera
 """
-from NTempObjectGIT import * 
+from NTempObjectGIT1 import * 
 import numericalunits as u
 u.reset_units('SI')
 
