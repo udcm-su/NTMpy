@@ -2,7 +2,7 @@
 This is a software providing a solution to the heat diffusion in a 1D structure. 
 
 We consider:
-* Multiple piecewise homogeneous materials behind each other. 
+* Piecewise homogeneous materials 
 * Electron system heating with a Gaussian like source
 * Two temperature model: electron & lattice temperature
 
@@ -10,7 +10,7 @@ The equation under consideration is:
 
  <img src="https://github.com/udcm-su/heat-diffusion-1D/blob/Developer/Pictures/DiffusionEq.png" width="750" height="120" />
  
- where *C* = heat capacity, *k* = conductivity, *G* is the coupling constant between the two systems (Electron and Lattice)
+ where *C* = specific heat, *k* = conductivity, *G* is the coupling constant between the two systems (Electron and Lattice)
   <img src="https://github.com/udcm-su/heat-diffusion-1D/blob/Developer/Pictures/phiE.png" width="30" height="20" /> and <img src="https://github.com/udcm-su/heat-diffusion-1D/blob/Developer/Pictures/phiL.png" width="30" height="20" /> 
   are the respective temperatures of the electron and the lattice system with respect to space *x* and time *t*. The super letters *L* and *E* indicate wether a parameter belongs to the electron or lattice system and the sub index *i* denotes to which layer the parameter belongs.
 
