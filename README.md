@@ -35,25 +35,28 @@ We can see the following effects in the animation:
   2. Diffusion of the electron heating along the x-axis
   3. Heat gets transported to the lattice system
 
-  ### How to contribute : 
-Fork from the `Developer`- branch and pull request to merge back into the original `Developer`- branch. 
-Working updates and improvements will then be merged into the `Master` branch, which will always contain the latest working version.
+#### Documentation
+Documentation and example sessions can be found in the [Wiki](https://github.com/udcm-su/heat-diffusion-1D/wiki)
 
-
-With: 
+#### With: 
 This is a project from the Ultrafast Condensed Matter physics groupe in Stockholm. The main contributors are: 
 * [Alber Lukas](https://github.com/luksen99) <img align="right" width="100" height="100" src="https://github.com/udcm-su/heat-diffusion-1D/blob/Developer/Pictures/SU.jpg">  <img align="right" width="100" height="100" src="https://github.com/udcm-su/heat-diffusion-1D/blob/Developer/Pictures/UDCM_logo.png">
 * [Scalera Valentino](https://github.com/VaSca92) 
 * [Vivek Unikandanunni](https://github.com/VivekUUnni)
 * [UDCM Group of SU](http://udcm.fysik.su.se/)
 
-Dependencies:
+#### Dependencies:
 
 [Numpy](http://www.numpy.org/)
 
 [Matplotlib](https://matplotlib.org/)
 
 [B-splines](https://github.com/johntfoster)
+
+
+#### How to contribute : 
+Fork from the `Developer`- branch and pull request to merge back into the original `Developer`- branch. 
+Working updates and improvements will then be merged into the `Master` branch, which will always contain the latest working version.
   
 
        
