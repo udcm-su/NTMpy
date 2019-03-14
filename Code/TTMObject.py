@@ -5,6 +5,11 @@ This is our code we use for the 2Temperatue solver.
 Multi layers and 2 temperatures can be solved. 
 The timestep for the euler loop is automatically calculated.
 We use an approch of B-splines and explicit euler to compute the solution
+What is new: 
+        1) The source package now has a new input method "TMM"
+                That is we consider the transfer matrix method in order to compute local absorption of the input heating source
+        2) In the visual class there is one more function "blocking" which can be used to statistically analyze and compress 
+                the output data obtained from the "average" function.     
 @author: Lukas Alber & Valentino Scalera
 """
 
