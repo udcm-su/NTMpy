@@ -5,6 +5,7 @@ We consider:
 * Material comprising piecewise homogeneous layers
 * Heating of electron system with an energy source with Gaussian shape (i.e. an ultrashort laser pulse)
 * Two temperature model: electron & lattice systems are considered and coupled
+* Transfer Matrix Method to account for local absorbed energy in the multi layer material
 
 The equation under consideration is: 
 
