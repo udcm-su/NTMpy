@@ -229,6 +229,16 @@ class temperature(object):
         return(c,A00,Abig,A1b,A2b,Cb,length,N,plp,xflat,x_plt_flat,initphi_large,interfaces,LayerMat,A1h)
         
     def addLayer(self,L,conductivity,heatCapacity,rho):
+        """
+        Add parameters of every layer: 
+        (length,conductivity[electron,lattice,spin],heatCapacity[electron, lattice, spin],density, coupling[E-L,L-S,S-E])
+        The units in SI are: 
+            [length]        = m
+            [conductivity]  = W/(mK)
+            [heatCapacity]  = J/(m^3K^2)
+            [density]       = kg/m^3
+            [Coupling]      = W/(m^3K)
+        """
         self.length = np.append(self.length,self.length[-1]+L)
         self.conductivity.append(conductivity)
         self.heatCapacity.append(heatCapacity)
@@ -270,6 +280,16 @@ class simulation(object):
         return('Simulation')
         
     def addLayer(self,L,conductivity,heatCapacity,rho,coupling=0):
+        """
+        Add parameters of every layer: 
+        (length,conductivity[electron,lattice,spin],heatCapacity[electron, lattice, spin],density, coupling[E-L,L-S,S-E])
+        The units in SI are: 
+            [length]        = m
+            [conductivity]  = W/(mK)
+            [heatCapacity]  = J/(m^3K^2)
+            [density]       = kg/m^3
+            [Coupling]      = W/(m^3K)
+        """
         #check all input arguments and make them to lists, for the multi layer case
         #make list when given as int or float
         typecheck = np.array([])
