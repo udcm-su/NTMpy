@@ -1333,11 +1333,11 @@ class visual(object):
             #Take weighted averages with respect to the length of each layer
             avT_E = len_of_layer[0]/tot_length*np.mean(self.T_E[:,0:points-1],1)
             avT_L = len_of_layer[0]/tot_length*np.mean(self.T_L[:,0:points-1],1)
-            avT_S = len_of_layer[0]/tot_length*np.mean(self.T_L[:,0:points-1],1)
+            avT_S = len_of_layer[0]/tot_length*np.mean(self.T_S[:,0:points-1],1)
             for i in range(1,len(len_of_layer)):
                 avT_E += len_of_layer[i]/tot_length*np.mean(self.T_E[:,i*points:(i+1)*points],1)
                 avT_L += len_of_layer[i]/tot_length*np.mean(self.T_L[:,i*points:(i+1)*points],1)
-                avT_S += len_of_layer[i]/tot_length*np.mean(self.T_L[:,i*points:(i+1)*points],1)
+                avT_S += len_of_layer[i]/tot_length*np.mean(self.T_S[:,i*points:(i+1)*points],1)
             plt.figure()
             plt.xlabel(r'Time in s')
             plt.ylabel(r'Temperature in K')
