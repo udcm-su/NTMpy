@@ -1158,10 +1158,12 @@ class source(object):
             kz      = 2*np.pi*n_vec[i]*np.cos(theta[i])/lambda0
             #How many points, out of the total 'points' does each layer get, with respect to 
             #the length of the layer
-            if i == 1: 
-                points_per_layer = int(np.round(points/(len(d_vec)-2)))+1
-            else:
-                points_per_layer = int(np.round(points/(len(d_vec)-2)))
+            if i == 1: #First layer gets 12 grid points see "Msetup()" function
+                points_per_layer = int(np.floor(points/(len(d_vec)-2)))+1
+                if len(n_vec)-1 == 2: #only one layer is considered
+                    points_per_layer = points
+            else: #All other layers get 11 points because of interface cutting
+                points_per_layer = int(np.floor(points/(len(d_vec)-2)))
             #for every layer, the space grid is reset. I.e. every layer starts at 0
             layer   = np.linspace(0,d_vec[i],points_per_layer)
             v = vw_n[i,0]; w = vw_n[i,1];#complex wave amplitudes for every layer
