@@ -635,15 +635,17 @@ class simulation(object):
                     Abig_S[end_i,end_i]            = intercon_S[0][k][-1] -intercon_S[1][k][0]
                     start_i += N-1; end_i += N-1
                 #computing the flux for every time step at the boundaries
-                Flux_E = BC_E[:,i]
-                Flux_E[0] /= self.temp_data.conductivity[0](c_E[0])   + 1e-12 #Avoidint 0 in denominator
-                Flux_E[1] /= self.temp_data.conductivity[-1](c_E[-1]) + 1e-12
+                #If Neumann BC-> devide over k(T) since BC_Type = 1
+                #If Dirichlet BC -> devide over 1 since BC_Type = 0
+                Flux_E = BC_E[:,i]#Avoidint 0 in denominator
+                Flux_E[0] /= self.temp_data.conductivity[0](c_E[0])**self.temp_data.Left_BC_Type + 1e-12 
+                Flux_E[-1] /= self.temp_data.conductivity[-1](c_E[-1])**self.temp_data.Right_BC_Type + 1e-12
                 Flux_L = BC_L[:,i]
-                Flux_L[0] /= self.temp_data_Lat.conductivity[0](c_L[0])   + 1e-12
-                Flux_L[1] /= self.temp_data_Lat.conductivity[-1](c_L[-1]) + 1e-12
+                Flux_L[0] /= self.temp_data_Lat.conductivity[0](c_L[0])**self.temp_data_Lat.Left_BC_Type + 1e-12
+                Flux_L[-1] /= self.temp_data_Lat.conductivity[-1](c_L[-1])**self.temp_data_Lat.Right_BC_Type + 1e-12
                 Flux_S = BC_S[:,i]
-                Flux_S[0] /= self.temp_data_Spin.conductivity[0](c_S[0])   + 1e-12
-                Flux_S[1] /= self.temp_data_Spin.conductivity[-1](c_S[-1]) + 1e-12
+                Flux_S[0] /= self.temp_data_Spin.conductivity[0](c_S[0])**self.temp_data_Spin.Left_BC_Type   + 1e-12
+                Flux_S[-1] /= self.temp_data_Spin.conductivity[-1](c_S[-1])**self.temp_data_Spin.Right_BC_Type + 1e-12
                 #Clear for boundary conditions at the edgeds of the grid
                 dphi_E[0] = 0; dphi_E[-1] = 0; 
                 phi0_E[0] = 0; phi0_E[-1] = 0;
@@ -742,11 +744,11 @@ class simulation(object):
                     start_i += N-1; end_i += N-1
                 #computing the flux for every time step for the boundaries
                 Flux_E = BC_E[:,i]
-                Flux_E[0] /= self.temp_data.conductivity[0](c_E[0])   + 1e-12
-                Flux_E[1] /= self.temp_data.conductivity[-1](c_E[-1]) + 1e-12
+                Flux_E[0] /= self.temp_data.conductivity[0](c_E[0])**self.temp_data.Left_BC_Type + 1e-12
+                Flux_E[-1] /= self.temp_data.conductivity[-1](c_E[-1])**self.temp_data.Right_BC_Type + 1e-12
                 Flux_L = BC_L[:,i]
-                Flux_L[0] /= self.temp_data_Lat.conductivity[0](c_L[0])   + 1e-12
-                Flux_L[1] /= self.temp_data_Lat.conductivity[-1](c_L[-1]) + 1e-12
+                Flux_L[0] /= self.temp_data_Lat.conductivity[0](c_L[0])**self.temp_data_Lat.Left_BC_Type + 1e-12
+                Flux_L[-1] /= self.temp_data_Lat.conductivity[-1](c_L[-1])**self.temp_data_Lat.Right_BC_Type + 1e-12
                 #Clear for boundary conditions at the edgeds of the grid
                 dphi_E[0] = 0; dphi_E[-1] = 0; dphi_L[0] = 0; dphi_L[-1] = 0
                 phi0_E[0] = 0; phi0_E[-1]  = 0; phi0_L[0] = 0; phi0_L[-1] = 0;   
@@ -805,8 +807,8 @@ class simulation(object):
                 start_i += N-1; end_i += N-1
                 #computing the flux for every time step for the boundaries
                 Flux_E = BC_E[:,i]
-                Flux_E[0] /= self.temp_data.conductivity[0](c_E[0])   + 1e-12
-                Flux_E[1] /= self.temp_data.conductivity[-1](c_E[-1]) + 1e-12
+                Flux_E[0] /= self.temp_data.conductivity[0](c_E[0])**self.temp_data.Left_BC_Type + 1e-12
+                Flux_E[-1] /= self.temp_data.conductivity[-1](c_E[-1])**self.temp_data.Right_BC_Type + 1e-12
                 #Make space for BC    
                 dphi[0] = 0; dphi[-1] = 0
                 phi0[0] = 0; phi0[-1]  = 0
