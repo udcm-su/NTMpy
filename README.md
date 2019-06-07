@@ -46,6 +46,7 @@ This is a project from the Ultrafast Condensed Matter physics groupe in Stockhol
 * [Vivek Unikandanunni](https://github.com/VivekUUnni)
 * [UDCM Group of SU](http://udcm.fysik.su.se/)
 
+
 #### Dependencies:
 
 [Numpy](http://www.numpy.org/)
@@ -53,6 +54,8 @@ This is a project from the Ultrafast Condensed Matter physics groupe in Stockhol
 [Matplotlib](https://matplotlib.org/)
 
 [B-splines](https://github.com/johntfoster)
+
+[Progressbar](https://pypi.org/project/tqdm/2.2.3/)
 
 
 #### How to contribute : 
