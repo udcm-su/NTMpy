@@ -4,12 +4,12 @@ This is a code providing a solution to the heat diffusion in a 1D structure in a
 We consider:
 * Material comprising piecewise homogeneous layers
 * Heating of electron system with an energy source with Gaussian shape (i.e. an ultrashort laser pulse)
-* Two temperature model: electron & lattice systems are considered and coupled
+* Three temperature model: electron, lattice and spin systems are considered and coupled
 * Transfer Matrix Method to account for local absorbed energy in the multi layer material
 
 The equation under consideration is: 
 
- <img src="https://github.com/udcm-su/heat-diffusion-1D/blob/Developer/Pictures/DiffusionEq.png" width="750" height="120" />
+ <img src="https://github.com/udcm-su/heat-diffusion-1D/blob/master/Pictures/Equation.PNG" width="750" height="120" />
  
  where *C* = specific heat, *k* = conductivity, *G* is the coupling constant between the two systems (Electron and Lattice)
   <img src="https://github.com/udcm-su/heat-diffusion-1D/blob/Developer/Pictures/phiE.png" width="30" height="20" /> and <img src="https://github.com/udcm-su/heat-diffusion-1D/blob/Developer/Pictures/phiL.png" width="30" height="20" /> 
