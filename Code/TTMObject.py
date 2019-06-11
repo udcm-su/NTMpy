@@ -278,6 +278,104 @@ class simulation(object):
             
     def __repr__(self): 
         return('Simulation')
+    
+        def changeInit(self,system,function): 
+        """
+        Change the initial condition of every system. 
+        .changeInit(system,function) has 2 input arguments
+        system      --> string "electron" or "lattice" or "spin"
+        function    --> a function handle or a number defining the value of the
+                        system at t=0 over the entire domain x. 
+        """
+        if (system == "electron") or (system == 0): 
+            self.temp_data.init = function
+        if (system == "lattice") or (system == 1):
+            self.temp_data_Lat.init = function
+        if (system == "spin") or (system == 2):
+            self.temp_data_Spin = function
+            
+    def changeBC_Type(self,system,side,BCType):
+        """
+        Function to change the type of the boundary condition on the left and 
+        right side of the material, for every system, "electron", "lattice", "spin"
+        respectively. 
+        .changeBC_Type(system,side,BCType) has 3 inputs, all of them are strings. 
+        system  --> "electron" or "lattice" or "spin"
+        side    --> "left" or "right"
+        BCType  --> "dirichlet" fixing the value/ "neumann" fixing the flux.
+        """
+        if (system == "electron") or (system == 0):
+            if side == "left": 
+                if (BCType == "dirichlet") or (BCType == 0):  
+                    self.temp_data.Left_BC_Type  = 0 
+                    print("Electron/left/dirichlet")
+                if (BCType == "neumann") or (BCType == 1): 
+                    self.temp_data.Left_BC_Type  = 1 
+                    print("Electron/left/neumann")
+            if side == "right": 
+                if (BCType == "dirichlet") or (BCType == 0): 
+                    self.temp_data.Right_BC_Type  = 0 
+                    print("Electron/right/dirichlet")
+                if (BCType == "neumann") or (BCType == 1): 
+                    self.temp_data.Right_BC_Type  = 1
+                    print("Electron/right/neumann")
+        if (system == "lattice") or (system == 1):
+            if side == "left":
+                if (BCType == "dirichlet") or (BCType == 0):  
+                    self.temp_data_Lat.Left_BC_Type  = 0 
+                    print("Lattice/left/dirichlet")
+                if (BCType == "neumann") or (BCType == 1): 
+                    self.temp_data_Lat.Left_BC_Type  = 1 
+                    print("Lattice/left/neumann")
+            if side == "right": 
+                if (BCType == "dirichlet") or (BCType == 0): 
+                    self.temp_data_Lat.Right_BC_Type  = 0 
+                    print("lattice/right/dirichlet")
+                if (BCType == "neumann") or (BCType == 1): 
+                    self.temp_data_Lat.Right_BC_Type  = 1
+                    print("Lattice/right/neumann")
+        if (system == "spin") or (system == 2):
+            if side == "left":
+                if (BCType == "dirichlet") or (BCType == 0):  
+                    self.temp_data_Spin.Left_BC_Type  = 0 
+                if (BCType == "neumann") or (BCType == 1): 
+                    self.temp_data_Spin.Left_BC_Type  = 1 
+            if side == "right": 
+                if (BCType == "dirichlet") or (BCType == 0): 
+                    self.temp_data_Spin.Right_BC_Type  = 0 
+                if (BCType == "neumann") or (BCType == 1): 
+                    self.temp_data_Spin.Right_BC_Type  = 1
+                    
+    def changeBC_Value(self,system,side,function):
+        """
+        Function to change the value of the boundary condition on the left and 
+        right side of the material, for every system, "electron", "lattice", "spin"
+        respectively. 
+        .changeBC_Value(system,side,function) the first two are strings, 
+        the last one is a function handle or a number. 
+        system  --> "electron" or "lattice" or "spin"
+        side    --> "left" or "right"
+        function--> function or number fixing the value on the boundaries for all times.
+        """
+        if (system == "electron") or (system == 0):
+            if side == "left":  
+                self.left_BC        = function 
+                print("Electron/left")
+            if side == "right": 
+                self.right_BC       = function
+                print("Electron/right/")
+        if (system == "lattice") or (system == 1):
+            if side == "left":  
+                self.left_BC_L      = function
+                print("Lattice/left")
+            if side == "right": 
+                self.right_BC_L     = function
+                print("Lattice/right")
+        if (system == "spin") or (system == 2):
+            if side == "left":
+                self.left_BC_S      = function 
+            if side == "right": 
+                self.right_BC_S     = function
         
     def addLayer(self,L,conductivity,heatCapacity,rho,coupling=0):
         """
@@ -861,7 +959,7 @@ class simulation(object):
         for i in range(0,interfaces+1):
             Lambda   = koeff1[i]*LayerMat[i]
             Eval[i]  = min(np.real(np.linalg.eig(Lambda)[0]))
-        tkonst_E = -2/Eval
+        tkonst_E = -1.9/Eval
         
         if self.num_of_temp == 2:
             """
@@ -912,7 +1010,7 @@ class simulation(object):
                 G_mat[M:,0:M]       = koeff2_L[i]*np.eye(M)
                 G_mat[M:,M:]        = -koeff2_L[i]*np.eye(M)
                 Eval[i]             = min(np.real(np.linalg.eig(Lambda+G_mat)[0]))
-            tkonst = -2/Eval
+            tkonst = -1.9/Eval
             return(min(tkonst))   
             
         if self.num_of_temp == 3: 
@@ -986,7 +1084,7 @@ class simulation(object):
                 G_mat += np.kron(K33,-unity*coeff_S*(G_SE[i]+G_LS[i]))
                 #Compute the minimum eigenvalue for each layer
                 Eval[i] = min(np.real(np.linalg.eig(Lambda+G_mat)[0]))
-            tkonst = -2/Eval
+            tkonst = -1.9/Eval
             #The global time constant will be guided by the fastest dynamics
             #of all the layers!
             return(min(tkonst))
