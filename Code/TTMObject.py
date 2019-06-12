@@ -313,7 +313,6 @@ class simulation(object):
             if side == "right": 
                 if (BCType == "dirichlet") or (BCType == 0): 
                     self.temp_data.Right_BC_Type  = 0 
-                    print("Electron/right/dirichlet")
                 if (BCType == "neumann") or (BCType == 1): 
                     self.temp_data.Right_BC_Type  = 1
         if (system == "lattice") or (system == "Lattice") or (system == 1):
@@ -325,7 +324,6 @@ class simulation(object):
             if side == "right": 
                 if (BCType == "dirichlet") or (BCType == 0): 
                     self.temp_data_Lat.Right_BC_Type  = 0 
-                    print("lattice/right/dirichlet")
                 if (BCType == "neumann") or (BCType == 1): 
                     self.temp_data_Lat.Right_BC_Type  = 1
         if (system == "spin") or (system == "Spin") or (system == 2):
@@ -354,17 +352,13 @@ class simulation(object):
         if (system == "electron") or (system == 0):
             if side == "left":  
                 self.left_BC        = function 
-                print("Electron/left")
             if side == "right": 
                 self.right_BC       = function
-                print("Electron/right/")
         if (system == "lattice") or (system == 1):
             if side == "left":  
                 self.left_BC_L      = function
-                print("Lattice/left")
             if side == "right": 
                 self.right_BC_L     = function
-                print("Lattice/right")
         if (system == "spin") or (system == 2):
             if side == "left":
                 self.left_BC_S      = function 
