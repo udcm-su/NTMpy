@@ -287,11 +287,11 @@ class simulation(object):
         function    --> a function handle or a number defining the value of the
                         system at t=0 over the entire domain x. 
         """
-        if (system == "electron") or (system == 0): 
+        if (system == "electron") or (system == "Electron") or (system == 0): 
             self.temp_data.init = function
-        if (system == "lattice") or (system == 1):
+        if (system == "lattice") or (system == "Lattice") or (system == 1):
             self.temp_data_Lat.init = function
-        if (system == "spin") or (system == 2):
+        if (system == "spin") or (system == "Spin") or (system == 2):
             self.temp_data_Spin = function
             
     def changeBC_Type(self,system,side,BCType):
@@ -349,17 +349,17 @@ class simulation(object):
         side    --> "left" or "right"
         function--> function or number fixing the value on the boundaries for all times.
         """
-        if (system == "electron") or (system == 0):
+        if (system == "electron") or (system == "Electron")  or (system == 0):
             if side == "left":  
                 self.left_BC        = function 
             if side == "right": 
                 self.right_BC       = function
-        if (system == "lattice") or (system == 1):
+        if (system == "lattice") or (system == "Lattice") or (system == 1):
             if side == "left":  
                 self.left_BC_L      = function
             if side == "right": 
                 self.right_BC_L     = function
-        if (system == "spin") or (system == 2):
+        if (system == "spin") or (system == "Spin") or (system == 2):
             if side == "left":
                 self.left_BC_S      = function 
             if side == "right": 
