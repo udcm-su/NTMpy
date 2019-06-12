@@ -279,7 +279,7 @@ class simulation(object):
     def __repr__(self): 
         return('Simulation')
     
-        def changeInit(self,system,function): 
+    def changeInit(self,system,function): 
         """
         Change the initial condition of every system. 
         .changeInit(system,function) has 2 input arguments
@@ -533,7 +533,7 @@ class simulation(object):
         gets called, where func is the Gaussian function, defined
         in the 'source' class. 
         """
-        if self.source.sourcetype == 'Gaussian':
+        if (self.source.sourcetype == 'Gaussian') and (self.source.fluence is not 0):
             print('-----------------------------------------------------------')
             print('Gaussian source type is applied')
             print('-----------------------------------------------------------')
@@ -576,7 +576,7 @@ class simulation(object):
                 lam = 1/self.source.optical_penetration_depth
                 [ttime,amplitude] = self.source.loadData
                 sourceM = self.source.THz(t,xflat,ttime,amplitude,lam)
-        if self.source.sourcetype == 'TMM': 
+        if (self.source.sourcetype == 'TMM') and (self.source.fluence is not 0): 
             """
             This will implement a transfer matrix approach to local absorption
             instead as using the Lambert Beer´s law considered in the Gaussian
@@ -1101,8 +1101,8 @@ class source(object):
 
     def __init__(self): 
         self.sourcetype     = 'Gaussian'
-        self.fluence        = []
-        self.optical_penetration_depth = []
+        self.fluence        = 0
+        self.optical_penetration_depth = 0
         self.t0             = 0
         self.FWHM           = False
         self.loadData       = False
