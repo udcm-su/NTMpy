@@ -304,37 +304,31 @@ class simulation(object):
         side    --> "left" or "right"
         BCType  --> "dirichlet" fixing the value/ "neumann" fixing the flux.
         """
-        if (system == "electron") or (system == 0):
+        if (system == "electron") or (system == "Electron") or (system == 0):
             if side == "left": 
                 if (BCType == "dirichlet") or (BCType == 0):  
                     self.temp_data.Left_BC_Type  = 0 
-                    print("Electron/left/dirichlet")
                 if (BCType == "neumann") or (BCType == 1): 
                     self.temp_data.Left_BC_Type  = 1 
-                    print("Electron/left/neumann")
             if side == "right": 
                 if (BCType == "dirichlet") or (BCType == 0): 
                     self.temp_data.Right_BC_Type  = 0 
                     print("Electron/right/dirichlet")
                 if (BCType == "neumann") or (BCType == 1): 
                     self.temp_data.Right_BC_Type  = 1
-                    print("Electron/right/neumann")
-        if (system == "lattice") or (system == 1):
+        if (system == "lattice") or (system == "Lattice") or (system == 1):
             if side == "left":
                 if (BCType == "dirichlet") or (BCType == 0):  
                     self.temp_data_Lat.Left_BC_Type  = 0 
-                    print("Lattice/left/dirichlet")
                 if (BCType == "neumann") or (BCType == 1): 
                     self.temp_data_Lat.Left_BC_Type  = 1 
-                    print("Lattice/left/neumann")
             if side == "right": 
                 if (BCType == "dirichlet") or (BCType == 0): 
                     self.temp_data_Lat.Right_BC_Type  = 0 
                     print("lattice/right/dirichlet")
                 if (BCType == "neumann") or (BCType == 1): 
                     self.temp_data_Lat.Right_BC_Type  = 1
-                    print("Lattice/right/neumann")
-        if (system == "spin") or (system == 2):
+        if (system == "spin") or (system == "Spin") or (system == 2):
             if side == "left":
                 if (BCType == "dirichlet") or (BCType == 0):  
                     self.temp_data_Spin.Left_BC_Type  = 0 
@@ -521,7 +515,15 @@ class simulation(object):
             [c_L,A00,Abig,A1b,A2b,Cb,length,N,plp,xflat,x_plt_flat,initphi_large_L,interfaces,LayerMat,A1h] = self.temp_data_Lat.Msetup()
         if self.temp_data_Spin: 
             [c_S,A00,Abig,A1b,A2b,Cb,length,N,plp,xflat,x_plt_flat,initphi_large_S,interfaces,LayerMat,A1h] = self.temp_data_Spin.Msetup()
-                        
+         
+        if  (self.source.fluence == 0): 
+            print('-----------------------------------------------------------')
+            print('No source is applied.\n'\
+                  'source.fluence = 0')
+            print('-----------------------------------------------------------')  
+            xmg, tmg = np.meshgrid(xflat,t)
+            sourceM = np.zeros_like(xmg)
+            
         #The source gets loaded and made into a matrix=======
         """
         First we load from the source class the module for the 
