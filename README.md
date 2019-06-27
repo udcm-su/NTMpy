@@ -57,10 +57,16 @@ This is a project from the Ultrafast Condensed Matter physics groupe in Stockhol
 
 [Progressbar](https://pypi.org/project/tqdm/2.2.3/)
 
+#### Cite 
+   <p align="center"> 
+   <img src="https://zenodo.org/badge/DOI/10.5281/zenodo.3258358.svg" width="300" height="30" />     
+   </p>
+
 
 #### How to contribute : 
 Fork from the `Developer`- branch and pull request to merge back into the original `Developer`- branch. 
 Working updates and improvements will then be merged into the `Master` branch, which will always contain the latest working version.
+
   
 
        
