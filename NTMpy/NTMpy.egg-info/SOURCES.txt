@@ -1,0 +1,9 @@
+README.md
+setup.py
+NTMpy/NTMpy.py
+NTMpy/__init__.py
+NTMpy.egg-info/PKG-INFO
+NTMpy.egg-info/SOURCES.txt
+NTMpy.egg-info/dependency_links.txt
+NTMpy.egg-info/requires.txt
+NTMpy.egg-info/top_level.txt

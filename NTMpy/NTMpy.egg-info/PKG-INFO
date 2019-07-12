@@ -1,0 +1,18 @@
+Metadata-Version: 2.1
+Name: NTMpy
+Version: 0.0.2
+Summary: A solver for parabolic partial differential equations
+Home-page: https://github.com/udcm-su/heat-diffusion-1D
+Author: Lukas Alber & Valentino Scalera
+Author-email: lukas.alber@fysik.su.se
+License: UNKNOWN
+Description: With this solver we provide an object which can be used to solve parabolic partial differential equations, i.e. 1st order in time and 2nd order in space.In addition we provide a class to compute the energy deposit by a source via Transfer Matrix Method and a class for graphical output for visualization.
+Keywords: mathematical modeling two temperature model differential equation
+Platform: UNKNOWN
+Classifier: Intended Audience :: Science/Research
+Classifier: Topic :: Scientific/Engineering :: Physics
+Classifier: Natural Language :: English
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Description-Content-Type: text/markdown
