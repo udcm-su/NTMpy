@@ -1,5 +1,10 @@
 # Two/ Three Temperature model solver 
 
+#### To download                    `pip install NTMpy`
+
+#### To call routines in a script:   `from NTMpy import NTMpy as ntm`
+--------------------------------------
+
 This section contains our solver for the two/ three temperature model. 
 
 Initially a phenomenological model proposed by Anisimov _et al._ and then extended to a 3 temperature model by Beaurepaire _et al_. this model is used to describe the dynamics of a material subject to laser induced heating on the surface. 
