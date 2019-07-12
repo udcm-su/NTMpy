@@ -5,7 +5,10 @@
 
 #### To call routines in a script:   `from NTMpy import NTMpy as ntm`
 
-Further information on the solver package itselfe can be found here:[NTMpy](https://github.com/udcm-su/heat-diffusion-1D/tree/master/NTMpy).
+Further information on the solver package itselfe can be found here: [NTMpy](https://github.com/udcm-su/heat-diffusion-1D/tree/master/NTMpy).
+
+Documentation and example sessions can be found in the [Wiki](https://github.com/udcm-su/heat-diffusion-1D/wiki).
+
 ------------------------------------------------------------------------------------------------------------------
 
 This is a code providing a solution to the heat diffusion in a 1D structure in a 2-temperature model approximation.
@@ -58,18 +61,6 @@ This is a project from the Ultrafast Condensed Matter physics groupe in Stockhol
 You can directly contact us via mail: [Lukas Alber](mailto:lukas.alber@fysik.su.se)
 
 
-#### Dependencies:
-
-[Numpy](http://www.numpy.org/)
-
-[Matplotlib](https://matplotlib.org/)
-
-[B-splines](https://github.com/johntfoster)
-
-[Progressbar](https://pypi.org/project/tqdm/2.2.3/)
-
-Note that by downloading the package via `pip install NTMpy` a routine, which automatically checks if all the required packages are existent on the local machine is implemented. If one of the dependent pip packages,listed here, is missing an automatic download is initiated.
-
 #### Cite 
    <p align="center"> 
    <img src="https://zenodo.org/badge/DOI/10.5281/zenodo.3258358.svg" width="300" height="30" />     
@@ -82,6 +73,19 @@ Since finding the thermophysical parameters needed to solve the equation under c
 
 Fork from the `Developer`- branch and pull request to merge back into the original `Developer`- branch. 
 Working updates and improvements will then be merged into the `Master` branch, which will always contain the latest working version.
+
+
+#### Dependencies:
+
+[Numpy](http://www.numpy.org/)
+
+[Matplotlib](https://matplotlib.org/)
+
+[B-splines](https://github.com/johntfoster)
+
+[Progressbar](https://pypi.org/project/tqdm/2.2.3/)
+
+Note that by downloading the package via `pip install NTMpy` a routine, which automatically checks if all the required packages are existent on the local machine is implemented. If one of the dependent pip packages,listed here, is missing an automatic download is initiated.
 
   
 
