@@ -1,4 +1,13 @@
-# Heat-Diffusion-1D
+# N Temperature Model- solver
+
+
+#### To download                    `pip install NTMpy`
+
+#### To call routines in a script:   `from NTMpy import NTMpy as ntm`
+
+Further information on the solver package itselfe can be found here:[NTMpy](https://github.com/udcm-su/heat-diffusion-1D/tree/master/NTMpy).
+------------------------------------------------------------------------------------------------------------------
+
 This is a code providing a solution to the heat diffusion in a 1D structure in a 2-temperature model approximation.
 
 We consider:
@@ -46,6 +55,8 @@ This is a project from the Ultrafast Condensed Matter physics groupe in Stockhol
 * [Vivek Unikandanunni](https://github.com/VivekUUnni)
 * [UDCM Group of SU](http://udcm.fysik.su.se/)
 
+You can directly contact us via mail: [Lukas Alber](mailto:lukas.alber@fysik.su.se)
+
 
 #### Dependencies:
 
@@ -57,6 +68,8 @@ This is a project from the Ultrafast Condensed Matter physics groupe in Stockhol
 
 [Progressbar](https://pypi.org/project/tqdm/2.2.3/)
 
+Note that by downloading the package via `pip install NTMpy` a routine, which automatically checks if all the required packages are existent on the local machine is implemented. If one of the dependent pip packages,listed here, is missing an automatic download is initiated.
+
 #### Cite 
    <p align="center"> 
    <img src="https://zenodo.org/badge/DOI/10.5281/zenodo.3258358.svg" width="300" height="30" />     
@@ -64,6 +77,9 @@ This is a project from the Ultrafast Condensed Matter physics groupe in Stockhol
 
 
 #### How to contribute : 
+
+Since finding the thermophysical parameters needed to solve the equation under consideration (see above) is current subject to research, we want to encourage our users to contribute with their knowledge of parameters. That is, please **send us the data of the parameters in use, together with references from literature** ( [Lukas Alber](mailto:lukas.alber@fysik.su.se)). We are working on providing an open source data base. Also see [NTMpy](https://github.com/udcm-su/heat-diffusion-1D/edit/master/NTMpy/README.md) page.
+
 Fork from the `Developer`- branch and pull request to merge back into the original `Developer`- branch. 
 Working updates and improvements will then be merged into the `Master` branch, which will always contain the latest working version.
 
