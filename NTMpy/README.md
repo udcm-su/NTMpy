@@ -3,6 +3,8 @@
 #### To download                    `pip install NTMpy`
 
 #### To call routines in a script:   `from NTMpy import NTMpy as ntm`
+
+#### To update to lates version:     `pip install --upgrade NTMpy`
 --------------------------------------
 
 This section contains our solver for the two/ three temperature model. 
