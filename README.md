@@ -1,9 +1,11 @@
 # N Temperature Model- solver
 
 
-#### To download                    `pip install NTMpy`
+#### To download                     `pip install NTMpy`
 
 #### To call routines in a script:   `from NTMpy import NTMpy as ntm`
+
+#### To update to lates version:     `pip install --upgrade NTMpy`
 
 Further information on the solver package itselfe can be found here: [NTMpy](https://github.com/udcm-su/heat-diffusion-1D/tree/master/NTMpy).
 
