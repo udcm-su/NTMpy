@@ -1,43 +1,12 @@
 """
-Changes I did: (07.02.2019)
-    1)  There is a new method in the simulation class: ´addSubstrate('name')´
-        It automatically adds 3 layers of Silicon to the material stack using
-        the ´addLayer()´ function in the temperature class. 
-        Note: I also introduced a new property ´substratesetup = False ´
-        in the source class. It will switch to 'True', once the the 
-        ´addSubstrate()´ function is called. This stops the ´n_vec´ list of the
-        source class from expanding if the simulation is executed multiple times
-        in a row. 
-    2)  There is a new method ´[T,R,A,absorption,xflat,grid] = localAbsorption()´ 
-        in the visual class. This gives back the local absorption profile
-        with respect to unit incident power of the laser. 
-        i.e. plot (xflat vs. absorption). Also the total Absorption A ect. using TMM
-    3)  Change the name of "THz"- source to "Custom".
-    4)  New property in Simulation class to change the temperature limits for
-        for stability lineraization.
-        sim.stability_lim = [lowlim,highlim]
-    5)  New property in the temperature class, making it possible to increase
-        the number of spline collocation points. 
-        Additional checks for right and symmetric dimensions for 
-        plt_points and collocpts are set in the run() method,
-        just before the systems are initialized and Msetup() is called. 
-        sim.temp_data.collocpts = some integer
-        sim.temp_data.plt_points = some integer
-    6) 08.07.2019
-        In the sim.rum() part for the 1 TM model there was a BUG. 
-        I used the spline coefficients "c_E" but recalculated them at each time step
-        naming the variable "c". (Line approx 1023)
-        For the time step injection if the timegrid is too big to capture the 
-        source correctly there was a statement: if self.source.FWHM == True: ... 
-        But it did not jump into this loop. Change: if self.source.FWHM: ...
-        (Line approx 536)     
-     7) 24.09.19
-        The way to initialize the source is now different. There is a maijore function `sourceprofile(...)`
-        in the simulation class. Now one can select the spaceprofile = "LB" or "TMM" independently from the 
-        timeprofile = "Gaussian" or "RepGaussian" or "Custom"
-        
-@author: Lukas Alber    & Valentino Scalera
-lukas.alber@fysik.su.se & valentino.scalera@unina.it 
+Created on Mon Sep  2 11:09:37 2019
+The  main part is from the TTMObjectSi- file
+Then I am applying some changes, such that the interface for the source is 
+    sourceprofile(space,time)
+    --> Where input for space can be LB or TMM
+    --> Input for time can be Gauss, repeated Gauss, custom
+@author: lUKAS
+
 """
 import numpy as np
 import matplotlib.pyplot as plt

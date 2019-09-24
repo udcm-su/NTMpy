@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: NTMpy
-Version: 0.0.2
+Version: 0.1.0
 Summary: A solver for parabolic partial differential equations
 Home-page: https://github.com/udcm-su/heat-diffusion-1D
 Author: Lukas Alber & Valentino Scalera
