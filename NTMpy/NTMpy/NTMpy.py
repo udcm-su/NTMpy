@@ -1,45 +1,13 @@
 """
-Created on Thu Apr 25 10:22:47 2019
-Description:
-This software package has been crated in order to solve coupled parabolic differential 
-equations.
+Created on Mon Sep  2 11:09:37 2019
+The  main part is from the TTMObjectSi- file
+Then I am applying some changes, such that the interface for the source is 
+    sourceprofile(space,time)
+    --> Where input for space can be LB or TMM
+    --> Input for time can be Gauss, repeated Gauss, custom
+@author: lUKAS
 
-Changes I did: (07.02.2019)
-    1)  There is a new method in the simulation class: ´addSubstrate('name')´
-        It automatically adds 3 layers of Silicon to the material stack using
-        the ´addLayer()´ function in the temperature class. 
-        Note: I also introduced a new property ´substratesetup = False ´
-        in the source class. It will switch to 'True', once the the 
-        ´addSubstrate()´ function is called. This stops the ´n_vec´ list of the
-        source class from expanding if the simulation is executed multiple times
-        in a row. 
-    2)  There is a new method ´[T,R,A,absorption,xflat,grid] = localAbsorption()´ 
-        in the visual class. This gives back the local absorption profile
-        with respect to unit incident power of the laser. 
-        i.e. plot (xflat vs. absorption). Also the total Absorption A ect. using TMM
-    3)  Change the name of "THz"- source to "Custom".
-    4)  New property in Simulation class to change the temperature limits for
-        for stability lineraization.
-        sim.stability_lim = [lowlim,highlim]
-    5)  New property in the temperature class, making it possible to increase
-        the number of spline collocation points. 
-        Additional checks for right and symmetric dimensions for 
-        plt_points and collocpts are set in the run() method,
-        just before the systems are initialized and Msetup() is called. 
-        sim.temp_data.collocpts = some integer
-        sim.temp_data.plt_points = some integer
-    6) 08.07.2019
-        In the sim.rum() part for the 1 TM model there was a BUG. 
-        I used the spline coefficients "c_E" but recalculated them at each time step
-        naming the variable "c". (Line approx 1023)
-        For the time step injection if the timegrid is too big to capture the 
-        source correctly there was a statement: if self.source.FWHM == True: ... 
-        But it did not jump into this loop. Change: if self.source.FWHM: ...
-        (Line approx 536)          
-@author: Lukas Alber    & Valentino Scalera
-lukas.alber@fysik.su.se & valentino.scalera@unina.it 
 """
-
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -482,35 +450,185 @@ class simulation(object):
             intercondiR[i] = conductivity[i+1](phi[end_i])*A1h[end_i+i+1]
             end_i += N-1        
         return(intercondiL,intercondiR) 
-    #create mulit layer source
-    def init_G_source(self,xflat,t,opt_pen,N,func):
-        """
-        First an empty array 'sourceM' is created.
-        Then we iterate over the different layers and call
-        func --> Gaussian. 
-        This will create a 2D (time, space) Gaussian source grid
-        with different lam[i].
-        For each layer, the problem is receted, i.e. we have new
-        Amplitude, new scope of the x-grid, new lambda. Only sigma stays the same.
-        """
-        x0 = self.temp_data.length#interfaces
 
-        lam = 1/opt_pen 
-        #create space for solution of source in matrix form
-        xmg, tmg = np.meshgrid(xflat,t)
-        sourceM  = np.zeros(np.shape(xmg))
-        #Convert the input, fluence & FWHM given in 'source' class to Amplitude and sigma
-        sigma2 = self.source.FWHM**2/(2*np.log(2))
-        A = self.source.fluence/np.sqrt(2*np.pi*sigma2)
-        #loop over all layers and change lambda, Amplitude and scope of the x-grid
-        startL = 0; endL = N-1
-        for i in range(2,len(opt_pen)+2):
-            sourceM[:,startL:endL] = func(xmg[:,startL:endL],tmg[:,startL:endL],lam[i-2],A,sigma2,x0[i-2])            
-            #at the end of each loop: the intensity of the end of previous layer
-            #will be the starting intensity of the next layer
-            A = A*np.exp(-(x0[i-1]-x0[i-2])*lam[i-2])
-            startL = endL; endL = i*N-i+1
+        
+    def sourceprofile(self,absorptionprofile,timeprofile,xflat,x0,t,N): 
+        #Consider Lambert Beers law in space and different types in time
+        if (absorptionprofile == "LB")  and (self.source.fluence is not 0):
+            if (timeprofile == "Gaussian") or (timeprofile == "repGaussian") or (timeprofile == "RepGaussian"):
+                #typechecking
+                typecheck = np.array([])
+                #in case of a number (int or float)
+                if type(self.source.optical_penetration_depth) is not (list or type(typecheck)): 
+                    self.source.optical_penetration_depth = np.array([self.source.optical_penetration_depth])
+                    #if given as a list
+                if type(self.source.optical_penetration_depth) is list: 
+                    self.source.optical_penetration_depth = np.asarray(self.source.optical_penetration_depth)
+                #To maintain form after multiple calls
+                if np.shape(self.source.optical_penetration_depth) == (1,len(x0)-1):
+                    self.source.optical_penetration_depth = self.source.optical_penetration_depth[0]
+                #dimensioncheck    
+                if (len(self.source.optical_penetration_depth) is not len(x0)-1):
+                    self.source.optical_penetration_depth = self.source.optical_penetration_depth*np.ones(len(x0)-1)
+                    print('-----------------------------------------------------------')
+                    print('Not every layer has a unique optical penetration depth. \n'\
+                          '=> optical penetration depth will be set to the value of the first layer = '\
+                          ' {optical_penetration_depth[0]:.2e} \n  for all other layers.'.format(optical_penetration_depth=self.source.optical_penetration_depth))
+                    print('-----------------------------------------------------------')
+                #Source with different optical penetration depth defined on the xflat gird  
+                if (timeprofile == "Gaussian"):
+                    print('-----------------------------------------------------------')
+                    print('Lambert Beer´s absorption law and a Gaussian time profile is applied as source.')
+                    print('-----------------------------------------------------------')
+                    sourceM = self.source.init_G_source(xflat,x0,t,self.source.optical_penetration_depth,N,self.source.Gaussian)
+            if (timeprofile == "repGaussian") or (timeprofile == "RepGaussian"):
+                print('-----------------------------------------------------------')
+                print('Lambert Beer absorption profile and a repeated Gaussian time profile is taken into account for the source.'\
+                      'The frequency of the pulse repetition has to be indicated via s.frequency = number (in 1/seconds).')
+                print('-----------------------------------------------------------')
+                self.source.multipulse = True
+                xmg, tmg = np.meshgrid(xflat,t)
+                if (self.source.frequency is not False):
+                    time_range  = tmg[-1,-1]-self.source.t0
+                    pulses      = int(round(time_range * self.source.frequency)) 
+                    #Add up Gaussian pulses with different t0, according to the frequency given
+                    #from t0 onwards, until the end of the time grid
+                    customtime = np.zeros(np.shape(tmg))
+                    for i in range(0,pulses): 
+                        t00 = self.source.t0 + i/self.source.frequency
+                        customtime +=np.exp(-(tmg-t00)**2*np.log(2)/(self.source.FWHM**2))
+                    sourceM = self.source.init_G_source(xflat,x0,t,self.source.optical_penetration_depth,N,self.source.Gaussian,customtime)
+                if(self.source.frequency is not False) and (self.source.num_of_pulses is not False):
+                    #Creating a certain number of pulses according to self.num_of_pulses
+                    time_range = tmg[-1,-1]-self.source.t0
+                    pulses = self.source.num_of_pulses
+                    #If num_of_pulses is bigger too big to fit in the timerange [t0,t_end] throw warning
+                    if (pulses > int(round(time_range * self.source.frequency))):
+                        pulses      = int(round(time_range * self.source.frequency)) 
+                        print('Number of pulses is too big to fit in the timerange under consideration. \n'\
+                              'Adjust t_end or consider a smaller number of pulses.')
+                    customtime = np.zeros(np.shape(tmg))
+                    for i in range(0,pulses):
+                        t00 = self.source.t0 +i/self.source.frequency
+                        customtime +=np.exp(-(tmg-t00)**2*np.log(2)/(self.source.FWHM**2))
+                    sourceM = self.source.init_G_source(xflat,x0,t,self.source.optical_penetration_depth,N,self.source.Gaussian,customtime)
+                if(self.source.frequency is False) and (self.source.num_of_pulses is False): 
+                    print('-----------------------------------------------------------')
+                    print('Assign the propertiy s.frequncy, to consider a certain pulse frequency.\n'\
+                          'If only a certain number of pulses should be considered, assign the value s.num_of_pulses = integer.')
+                    print('-----------------------------------------------------------')
+                
+            if (timeprofile == "custom") or (timeprofile == "Custom"): 
+                print('-----------------------------------------------------------')
+                print('Lambert Beer´s absorption law and a custom time profile is applied as source.')
+                print('-----------------------------------------------------------')
+                if (np.any(self.source.optical_penetration_depth == 0)) or (np.any(self.source.optical_penetration_depth == False)):
+                    print('-----------------------------------------------------------')
+                    print('No optical penetration depth has been given to the Lambert Beer space profile.\n'\
+                          'This property (a number) can be assgned to every layer by s.optical_pen_depth = [op1,op2,...].')
+                    print('-----------------------------------------------------------')
+                #typecheckingm for the optical_pen_depth
+                typecheck = np.array([])
+                #in case of a number (int or float)
+                if type(self.source.optical_penetration_depth) is not (list or type(typecheck)): 
+                    self.source.optical_penetration_depth = np.array([self.source.optical_penetration_depth])
+                    #if given as a list
+                if type(self.source.optical_penetration_depth) is list: 
+                    self.source.optical_penetration_depth = np.asarray(self.source.optical_penetration_depth)
+                #To maintain form after multiple calls
+                if np.shape(self.source.optical_penetration_depth) == (1,len(x0)-1):
+                    self.source.optical_penetration_depth = self.source.optical_penetration_depth[0]
+                #dimensioncheck    
+                if (len(self.source.optical_penetration_depth) is not len(x0)-1):
+                    self.source.optical_penetration_depth = self.source.optical_penetration_depth*np.ones(len(x0)-1)
+                    print('-----------------------------------------------------------')
+                    print('Not every layer has a unique optical penetration depth. \n'\
+                          '=> optical penetration depth will be set to the value of the first layer = '\
+                          ' {optical_penetration_depth[0]:.2e} \n  for all other layers.'.format(optical_penetration_depth=self.source.optical_penetration_depth))
+                    print('-----------------------------------------------------------')
+                [ttime,amplitude] = self.source.loadData
+                lam = 1#Lamda does not matter here since the spacial absorption is calculated via TMM
+                [sourcemat,customtime,scaling] = self.source.custom(t,xflat,ttime,amplitude,lam)
+                #Source with different optical penetration depth defined on the xflat gird   
+                sourceM = self.source.init_G_source(xflat,x0,t,self.source.optical_penetration_depth,N,self.source.Gaussian,customtime,scaling)
+
+                            
+        #Consider Transfer Matrix in space and different types in time    
+        if (absorptionprofile == "TMM") and (self.source.fluence is not 0):
+            """
+            This will implement a transfer matrix approach to local absorption
+            instead as using the Lambert Beer´s law considered in the Gaussian
+            source type.
+            """
+            #Multiplying with 1e9, since the absorption()-function. In the source module only works if length is in units of nm!
+            x0m = x0*1e9#converte the lentgh into nm
+            if len(x0) is not (len(self.source.n_vec)-1):
+                print('-----------------------------------------------------------')
+                print('Number of considered layers does not match with given refractive indices.\n'\
+                      'in ´source.n_vec(Air|Film layer1|Film layer2|...|Air)´ anly consider the film layers. \n'\
+                      'The refractive index of the substrate gets added automatically later when \n'\
+                      '`simulation.addSubstrate(\'name\')` gets called.')                
+                print('-----------------------------------------------------------')
+            if (timeprofile == "Gaussian"):
+                sourceM = self.source.createTMM(xflat,t,x0m)
+                print('-----------------------------------------------------------')
+                print('Transfer matrix absorption profile of and a Gaussian time profile is taken into account for the source.'\
+                      'Length of every layer has to be given in units of meter.')
+                print('-----------------------------------------------------------')
+            if (timeprofile == "custom") or (timeprofile == "Custom"): 
+                print('-----------------------------------------------------------')
+                print('Transfer matrix absorption profile of and a custom time profile is taken into account for the source.'\
+                      'Length of every layer has to be given in units of meter.')
+                print('-----------------------------------------------------------')
+                if self.source.loadData is False: 
+                    print('-----------------------------------------------------------')
+                    print('Import an array, containing the data of the custom pulse.'\
+                          'arr[0,:] = time; arr[1,:] = amplitude')
+                    print('-----------------------------------------------------------')
+                [ttime,amplitude] = self.source.loadData
+                lam = 1#Lamda does not matter here since the spacial absorption is calculated via TMM
+                [sourceM,customtime,scaling] = self.source.custom(t,xflat,ttime,amplitude,lam)
+                #The cfeateTMM(xgrid,timegrid,length,*args) has customtime as an optional argument
+                sourceM = self.source.createTMM(xflat,t,x0m,customtime,scaling)
+                
+            if (timeprofile == "RepGaussian") or (timeprofile== "repGaussian"): 
+                print('-----------------------------------------------------------')
+                print('Transfer matrix absorption profile and a repeated Gaussian time profile is taken into account for the source.'\
+                      'Length of every layer has to be given in units of meter.')
+                print('-----------------------------------------------------------')
+                self.source.multipulse = True
+                xmg, tmg = np.meshgrid(xflat,t)
+                if (self.source.frequency is not False):
+                    time_range  = tmg[-1,-1]-self.source.t0
+                    pulses      = int(round(time_range * self.source.frequency)) 
+                    #Add up Gaussian pulses with different t0, according to the frequency given
+                    #from t0 onwards, until the end of the time grid
+                    customtime = np.zeros(np.shape(tmg))
+                    for i in range(0,pulses): 
+                        t00 = self.source.t0 + i/self.source.frequency
+                        customtime +=np.exp(-(tmg-t00)**2*np.log(2)/(self.source.FWHM**2))
+                    sourceM = self.source.createTMM(xflat,t,x0m,customtime)
+                if(self.source.frequency is not False) and (self.source.num_of_pulses is not False):
+                    #Creating a certain number of pulses according to self.num_of_pulses
+                    time_range = tmg[-1,-1]-self.source.t0
+                    pulses = self.source.num_of_pulses
+                    #If num_of_pulses is bigger too big to fit in the timerange [t0,t_end] throw warning
+                    if (pulses > int(round(time_range * self.source.frequency))):
+                        pulses      = int(round(time_range * self.source.frequency)) 
+                        print('Number of pulses is too big to fit in the timerange under consideration. \n'\
+                              'Adjust t_end or consider a smaller number of pulses.')
+                    customtime = np.zeros(np.shape(tmg))
+                    for i in range(0,pulses):
+                        t00 = self.source.t0 +i/self.source.frequency
+                        customtime +=np.exp(-(tmg-t00)**2*np.log(2)/(self.source.FWHM**2))
+                    sourceM = self.source.createTMM(xflat,t,x0m,customtime)
+                if(self.source.frequency is False) and (self.source.num_of_pulses is False): 
+                    print('-----------------------------------------------------------')
+                    print('Assign the propertiy s.frequncy, to consider a certain pulse frequency.\n'\
+                          'If only a certain number of pulses should be considered, assign the value s.num_of_pulses = integer.')
+                    print('-----------------------------------------------------------')
         return(sourceM)
+        
 
     # This is the main Explicit Euler loop where the solution to T(x,t) is calculated.
     def run(self):
@@ -613,88 +731,8 @@ class simulation(object):
             print('-----------------------------------------------------------')  
             xmg, tmg = np.meshgrid(xflat,t)
             sourceM = np.zeros_like(xmg)
-            
-        #The source gets loaded and made into a matrix=======
-        """
-        First we load from the source class the module for the 
-        Gaussian source type. Then we do a check if for multiple
-        layers, also multiple optical penetration depths are given. 
-        Then the method 'init_G_source(xflat,t,opt_pen,N,func)' 
-        gets called, where func is the Gaussian function, defined
-        in the 'source' class. 
-        """
-        if (self.source.sourcetype == 'Gaussian') and (self.source.fluence is not 0):
-            print('-----------------------------------------------------------')
-            print('Gaussian source type is applied.')
-            print('-----------------------------------------------------------')
-            #typechecking
-            typecheck = np.array([])
-            #in case of a number (int or float)
-            if type(self.source.optical_penetration_depth) is not (list or type(typecheck)): 
-                self.source.optical_penetration_depth = np.array([self.source.optical_penetration_depth])
-                #if given as a list
-            if type(self.source.optical_penetration_depth) is list: 
-                self.source.optical_penetration_depth = np.asarray(self.source.optical_penetration_depth)
-            #To maintain form after multiple calls
-            if np.shape(self.source.optical_penetration_depth) == (1,len(length)-1):
-                self.source.optical_penetration_depth = self.source.optical_penetration_depth[0]
-            #dimensioncheck    
-            if (len(self.source.optical_penetration_depth) is not len(length)-1):
-                self.source.optical_penetration_depth = self.source.optical_penetration_depth*np.ones(len(length)-1)
-                print('-----------------------------------------------------------')
-                print('Not every layer has a unique optical penetration depth. \n'\
-                      '=> optical penetration depth will be set to the value of the first layer = '\
-                      ' {optical_penetration_depth[0]:.2e} \n  for all other layers.'.format(optical_penetration_depth=self.source.optical_penetration_depth))
-                print('-----------------------------------------------------------')
-            #Source with different optical penetration depth defined on the xflat gird   
-            sourceM = self.init_G_source(xflat,t,self.source.optical_penetration_depth,N,self.source.Gaussian)
- 
-        if self.source.sourcetype == 'Custom' or self.source.sourcetype == 'custom': 
-            """
-            Here I want to consider the simplistic model of a custom pulse. 
-            Data of the time evolution and amplitude has to be loaded into the source class
-            exponential decay in space is considered
-            """
-            if self.source.loadData is False: 
-                print('-----------------------------------------------------------')
-                print('Import an array, containing the data of the custom pulse.'\
-                      'arr[0,:] = time; arr[1,:] = amplitude')
-                print('-----------------------------------------------------------')
-            else:  
-                print('-----------------------------------------------------------')
-                print('Custom time profile of source is taken into account.')
-                print('-----------------------------------------------------------')
-                lam = 1/self.source.optical_penetration_depth
-                [ttime,amplitude] = self.source.loadData
-                sourceM = self.source.custom(t,xflat,ttime,amplitude,lam)
-        if (self.source.sourcetype == 'TMM') and (self.source.fluence is not 0): 
-            """
-            This will implement a transfer matrix approach to local absorption
-            instead as using the Lambert Beer´s law considered in the Gaussian
-            source type.
-            """
-            if len(self.temp_data.length) is not (len(self.source.n_vec)-1):
-                print('-----------------------------------------------------------')
-                print('Number of considered layers does not match with given refractive indices.\n'\
-                      'in ´source.n_vec(Air|Film layer1|Film layer2|...|Air)´ anly consider the film layers. \n'\
-                      'The refractive index of the substrate gets added automatically later when \n'\
-                      '`simulation.addSubstrate(\'name\')` gets called.')                
-                print('-----------------------------------------------------------')
-            #!!I am assuming the input for the disstances is given in nm
-            #!!Then I am multiplying with 1e9, since the absorption()-function
-            #!!In the source module only works if length is in units of nm!!
-            sourceM = self.source.createTMM(xflat,t,self.temp_data.length*1e9)
-            print('-----------------------------------------------------------')
-            print('Transfer matrix absorption profile of source is taken into account.'\
-                  'Length of every layer has to be given in units of meter.')
-            print('-----------------------------------------------------------')
-        if  self.source.sourcetype is not 'TMM' and self.source.sourcetype is not 'Gaussian' and self.source.sourcetype is not 'Custom': 
-            print('-----------------------------------------------------------')
-            print('No valid sourcetype is under consideration.'\
-                  'Initialize one of the three sourcetypes by ´source.sourcetype(\'name\')´.\n'\
-                  'Where \'name\' is a string either \'Gaussian\' or \'TMM\' or \'Custom\'\n. '\
-                  'Also make sure that ´source.fluence´ is not zero')
-            print('-----------------------------------------------------------')
+        else:
+            sourceM = self.sourceprofile(self.source.spaceprofile,self.source.timeprofile,xflat,self.temp_data.length,t,N)
             
         #Making the boundary conditions a function of t, in case they are given as scalars
         if isinstance(self.left_BC,(int,float)): 
@@ -1226,7 +1264,9 @@ class simulation(object):
 class source(object):
 
     def __init__(self): 
-        self.sourcetype     = 'Gaussian'
+        self.spaceprofile   = 'TMM'
+        self.timeprofile    = 'Gaussian'
+        #self.sourcetype     = 'Gaussian'
         self.fluence        = 0
         self.optical_penetration_depth = 0
         self.t0             = 0
@@ -1254,41 +1294,96 @@ class source(object):
     def __repr__(self): 
         return('Source')
             
-    def Gaussian(self,xmg,tmg,lam,A,sigma2,x0):
+    def Gaussian(self,xmg,tmg,lam,A,sigma2,x0,customtime = None):
         if not (self.fluence or self.FWHM):
             print('------------------------------------------------------------')
             print('Create a pulse with defining pulse properties. \n ' +\
                   '.fluence, .optical_penetration_depth, .FWHM')
             print('------------------------------------------------------------')
-        #Create a source with respect to each lam of every layer
-        Gauss = A*np.exp(-(tmg-self.t0)**2/(2*sigma2))
-        Gauss *= lam*np.exp(-lam*(xmg-x0))
-        
-        if (self.multipulse is not False and self.num_of_pulses is False):
-            time_range  = tmg[-1,-1]-self.t0
-            pulses      = int(round(time_range * self.frequency)) 
-            #Add up Gaussian pulses with different t0, according to the frequency given
-            #from t0 onwards, until the end of the time grid
-            Gauss = np.zeros(np.shape(tmg))
-            for i in range(0,pulses): 
-                t00 = self.t0 + i/self.frequency
-                Gauss += self.fluence/self.FWHM*np.sqrt(np.log(2)/np.pi)*np.exp(-(tmg-t00)**2*np.log(2)/(self.FWHM**2))*lam*np.exp(-lam*xmg) 
-                 
-        if (self.multipulse is not False and self.num_of_pulses is not False):
-            #Creating a certain number of pulses according to self.num_of_pulses
-            time_range = tmg[-1,-1]-self.t0
-            pulses = self.num_of_pulses
-            #If num_of_pulses is bigger too big to fit in the timerange [t0,t_end] throw warning
-            if (pulses > int(round(time_range * self.frequency))):
-                pulses      = int(round(time_range * self.frequency)) 
-                print('Number of pulses is too big to fit in the timerange under consideration. \n'\
-                      'Adjust t_end or consider a smaller number of pulses.')
-            Gauss = np.zeros(np.shape(tmg))
-            for i in range(0,pulses):
-                t00 = self.t0 +i/self.frequency
-                Gauss += self.fluence/self.FWHM*np.sqrt(np.log(2)/np.pi)*np.exp(-(tmg-t00)**2*np.log(2)/(self.FWHM**2))*lam*np.exp(-lam*xmg) 
-        
+        if np.any(customtime) == None:
+            #Create a source with respect to each lam of every layer. Use the init_G_source function
+            Gauss = A*np.exp(-(tmg-self.t0)**2/(2*sigma2)) #Gaussian in time
+        else: 
+            Gauss = A*customtime#custom in time
+        Gauss *= lam*np.exp(-lam*(xmg-x0))#space profile: LB decay
         return(Gauss)
+        
+    def init_G_source(self,xflat,x0,t,opt_pen,N,func,customtime = None,scaling = 0):
+        """
+        First an empty array 'sourceM' is created.
+        Then we iterate over the different layers and call
+        func --> Gaussian. 
+        This will create a 2D (time, space) Gaussian source grid
+        with different lam[i].
+        For each layer, the problem is receted, i.e. we have new
+        Amplitude, new scope of the x-grid, new lambda. Only sigma stays the same.
+        """
+        lam = 1/opt_pen 
+        #create space for solution of source in matrix form
+        xmg, tmg = np.meshgrid(xflat,t)
+        sourceM  = np.zeros(np.shape(xmg))
+        if np.any(customtime) == None:
+            #Convert the input, fluence & FWHM given in 'source' class to Amplitude and sigma
+            sigma2 = self.FWHM**2/(2*np.log(2))
+            A = self.fluence/np.sqrt(2*np.pi*sigma2)
+            #loop over all layers and change lambda, Amplitude and scope of the x-grid
+            startL = 0; endL = N-1
+            for i in range(2,len(opt_pen)+2):
+                sourceM[:,startL:endL] = func(xmg[:,startL:endL],tmg[:,startL:endL],lam[i-2],A,sigma2,x0[i-2])            
+                #at the end of each loop: the intensity of the end of previous layer
+                #will be the starting intensity of the next layer
+                A = A*np.exp(-(x0[i-1]-x0[i-2])*lam[i-2])
+                startL = endL; endL = i*N-i+1
+        else:#In the case of LB in space and custom in time
+            if (self.timeprofile== "RepGaussian") or (self.timeprofile=="repGaussian"):
+                sigma2 = self.FWHM**2/(2*np.log(2))
+                A = self.fluence/np.sqrt(2*np.pi*sigma2)
+                startL = 0; endL = N-1
+                for i in range(2,len(opt_pen)+2):
+                    sourceM[:,startL:endL] = func(xmg[:,startL:endL],tmg[:,startL:endL],lam[i-2],A,sigma2,x0[i-2],customtime[:,startL:endL])            
+                    #at the end of each loop: the intensity of the end of previous layer
+                    #will be the starting intensity of the next layer
+                    A = A*np.exp(-(x0[i-1]-x0[i-2])*lam[i-2])
+                    startL = endL; endL = i*N-i+1
+            if (self.timeprofile== "custom") or (self.timeprofile == "Custom"):
+                A      = scaling#calculated in the custom() function
+                sigma2 = 0#It is not needed
+                startL = 0; endL = N-1
+                for i in range(2,len(opt_pen)+2):
+                    sourceM[:,startL:endL] = func(xmg[:,startL:endL],tmg[:,startL:endL],lam[i-2],A,sigma2,x0[i-2],customtime[:,startL:endL])            
+                    #at the end of each loop: the intensity of the end of previous layer
+                    #will be the starting intensity of the next layer
+                    A = A*np.exp(-(x0[i-1]-x0[i-2])*lam[i-2])
+                    startL = endL; endL = i*N-i+1
+                    
+                
+        return(sourceM)
+        
+# =============================================================================
+#         if (self.multipulse is not False and self.num_of_pulses is False):
+#             time_range  = tmg[-1,-1]-self.t0
+#             pulses      = int(round(time_range * self.frequency)) 
+#             #Add up Gaussian pulses with different t0, according to the frequency given
+#             #from t0 onwards, until the end of the time grid
+#             Gauss = np.zeros(np.shape(tmg))
+#             for i in range(0,pulses): 
+#                 t00 = self.t0 + i/self.frequency
+#                 Gauss += self.fluence/self.FWHM*np.sqrt(np.log(2)/np.pi)*np.exp(-(tmg-t00)**2*np.log(2)/(self.FWHM**2))*lam*np.exp(-lam*xmg)  
+#         if (self.multipulse is not False and self.num_of_pulses is not False):
+#             #Creating a certain number of pulses according to self.num_of_pulses
+#             time_range = tmg[-1,-1]-self.t0
+#             pulses = self.num_of_pulses
+#             #If num_of_pulses is bigger too big to fit in the timerange [t0,t_end] throw warning
+#             if (pulses > int(round(time_range * self.frequency))):
+#                 pulses      = int(round(time_range * self.frequency)) 
+#                 print('Number of pulses is too big to fit in the timerange under consideration. \n'\
+#                       'Adjust t_end or consider a smaller number of pulses.')
+#             Gauss = np.zeros(np.shape(tmg))
+#             for i in range(0,pulses):
+#                 t00 = self.t0 +i/self.frequency
+#                 Gauss += self.fluence/self.FWHM*np.sqrt(np.log(2)/np.pi)*np.exp(-(tmg-t00)**2*np.log(2)/(self.FWHM**2))*lam*np.exp(-lam*xmg) 
+# =============================================================================
+
     #mytime is the timegrid of the simulation
     #time, amplitude are the timegrids of the inputdata collected from the lab    
     def custom(self,mytime,myspace,ttime,amplitude,lam):
@@ -1299,15 +1394,10 @@ class source(object):
         #scling factore to get the amplitude right
         scaling = self.fluence/integr
         xmg,tmg = np.meshgrid(myspace,mytime)
-        ampl2D    = np.interp(tmg,ttime,amplitude**2)
-        ampl2D *= scaling
-        #exponential decay in space
-        lam = 1/self.optical_penetration_depth
-        ampl2D *= lam*np.exp(-lam*xmg)
-        return(ampl2D)
-        
-        
-        
+        ampltime= np.interp(tmg,ttime,amplitude**2)
+        #ampltime *= scaling
+        ampl2D = ampltime*lam*np.exp(-lam*xmg)
+        return(ampl2D,ampltime,scaling)
         
         
     def fresnel(self,theta_in,n_in,n_out,pol): 
@@ -1413,26 +1503,37 @@ class source(object):
         return(a,grid)
         
         
-    def createTMM(self,xflat,t,x0): 
+    def createTMM(self,xflat,t,x0,timeprof = False,scaling=0): 
         #The distances and hence x0 have to be given in units of nm!
         xmg, tmg = np.meshgrid(xflat,t)
         #Adding infinite layer at the beginning and at the end of the distance vector
         d_vec   = np.diff(x0); d_vec = np.insert(d_vec,(0,len(d_vec)),np.inf) 
         #Calculating the 1D absorption profile according to TMM
         [absorption,grid] = self.absorption(self.theta_in,self.lambda_vac,self.n_vec,d_vec,self.polarization,np.shape(xflat)[0])
-        #Convert the input, fluence & FWHM given in 'source' class to Amplitude and sigma
-        sigma2  = self.FWHM**2/(2*np.log(2))
-        A       = self.fluence/np.sqrt(2*np.pi*sigma2)
-        #Evaluate the Gaussian time profile
-        sourceM = A*np.exp(-(tmg-self.t0)**2/(2*sigma2))
+        #Evaluate the Gaussian time profile 
+        if np.any(timeprof) == False:
+            #Convert the input, fluence & FWHM given in 'source' class to Amplitude and sigma
+            sigma2  = self.FWHM**2/(2*np.log(2))
+            A       = self.fluence/np.sqrt(2*np.pi*sigma2)
+            sourceM = A*np.exp(-(tmg-self.t0)**2/(2*sigma2))
+        if (self.timeprofile == "repGaussian") or (self.timeprofile == "RepGaussian"):
+            sigma2  = self.FWHM**2/(2*np.log(2))
+            A       = self.fluence/np.sqrt(2*np.pi*sigma2)
+            sourceM = A*timeprof
+        if (self.timeprofile == "Custom") or (self.timeprofile == "custom"):
+            #Check the custom function in this class! It is already multiplied with a scaling factor 
+            sourceM = scaling*timeprof
         #Multiplying it with the absorption profile to obtain 2D (space-time source map)
         sourceM *= absorption/1e-9
         return(sourceM)
         
         
+    
 
         
         
+
+
 class visual(object): 
     
     def __init__(self,*args):
@@ -1459,13 +1560,13 @@ class visual(object):
         else:
             self.sim = args[0]
             print('------------------------------------------------------------')
-            print('The simulation object of the'+str(self.sim.num_of_temp)+' temerature system has been passed on to the visual class.')
+            print('The simulation object of the '+str(self.sim.num_of_temp)+' temerature system has been passed on to the visual class.')
             print('------------------------------------------------------------') 
             #three temperature case 
             if (self.sim.num_of_temp == 3 and self.data == False):   
                 [self.T_E, self.T_L,self.T_S, self.x, self.t] = self.sim.run()
-                self.so                                 = self.sim.source
-                x0          = self.sim.temp_data.length*1e9
+                self.so     = self.sim.source
+                x0          = self.sim.temp_data.length
                 d_vec       = np.diff(x0);
                 d_vec       = np.insert(d_vec,(0,len(d_vec)),np.inf) 
                 self.dvec   = d_vec
@@ -1474,7 +1575,7 @@ class visual(object):
             if (self.sim.num_of_temp == 2 and self.data == False):  
                 [self.T_E, self.T_L, self.x, self.t]    = self.sim.run()
                 self.so                                 = self.sim.source
-                x0          = self.sim.temp_data.length*1e9
+                x0          = self.sim.temp_data.length
                 d_vec       = np.diff(x0);
                 d_vec       = np.insert(d_vec,(0,len(d_vec)),np.inf) 
                 self.dvec   = d_vec
@@ -1483,7 +1584,7 @@ class visual(object):
             if (self.sim.num_of_temp == 1 and self.data == False): 
                 [self.T_E, self.x, self.t]              = self.sim.run()
                 self.so                                 = self.sim.source 
-                x0          = self.sim.temp_data.length*1e9
+                x0          = self.sim.temp_data.length
                 d_vec       = np.diff(x0);
                 d_vec       = np.insert(d_vec,(0,len(d_vec)),np.inf)
                 self.dvec   = d_vec
@@ -1492,22 +1593,8 @@ class visual(object):
         return('Visual')
         
     def source(self):
-        opt_pen = self.so.optical_penetration_depth
-        if self.so.sourcetype == "Gaussian":
-        #Source with different optical penetration depths
-        #defined on the x_plt and time grid. 
-        #Call the initalisation 'init_G_source' = method in 'simulation' class
-        #The 'init_G_source' needs the Gauss function of the 'source' class in the source class
-            init_Gauss_is = self.sim.init_G_source
-            N             = self.sim.temp_data.plt_points
-            s             = init_Gauss_is(self.x,self.t,opt_pen,N,self.so.Gaussian)
-        if self.so.sourcetype == "Custom": 
-            ttime       = self.so.loadData[0] 
-            amplitude   = self.so.loadData[1]
-            s           = self.so.custom(self.t,self.x,ttime,amplitude,1/opt_pen)
-        if self.so.sourcetype == "TMM": 
-            s           = self.so.createTMM(self.x,self.t,self.sim.temp_data.length*1e9)
-            
+        s = self.sim.sourceprofile(self.so.spaceprofile,self.so.timeprofile,self.x,self.sim.temp_data.length,self.t,self.sim.temp_data.plt_points)
+        
         xx,tt = np.meshgrid(self.x,self.t)
         fig  = plt.figure()
         ax   = fig.gca(projection='3d')
