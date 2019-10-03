@@ -1,4 +1,4 @@
-# N Temperature Model- solver
+# NTMpy - N-Temperature Model solver
 
 
 #### To download                     `pip install NTMpy`
