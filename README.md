@@ -41,7 +41,7 @@ The equation under consideration is:
  
   Temperature evolution of electron- lattice system |  Gaussian laser pulse S(x,t) hitting sample
 :-------------------------:|:-------------------------:
- <img src="https://media.giphy.com/media/dIUAz7xfof5N8B8tUy/giphy.gif" width="320" height="300" />  |  <img src="https://github.com/udcm-su/heat-diffusion-1D/blob/Developer/Pictures/Source.png" width="320" height="300" />
+ <img src="https://media.giphy.com/media/RHE9DS2kPSdobin3hv/giphy.gif" width="320" height="300" />  |  <img src="https://github.com/udcm-su/heat-diffusion-1D/blob/Developer/Pictures/Source.png" width="320" height="300" />
  
 Here we consider an energy source *S(x,t)* = *lambda* * *exp(-lambda* * *(x-x0))* * *G(t-t0)* representing a laser pulse hitting a material from the left. 
  
