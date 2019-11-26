@@ -24,7 +24,7 @@ Since finding the thermophysical parameters needed to solve the equation under c
 
 #### Cite 
    <p align="center"> 
-   <img src="https://zenodo.org/badge/DOI/10.5281/zenodo.3333493.svg" width="300" height="30" />   
+   <img src="https://zenodo.org/badge/158247812.svg" width="300" height="30" />   
    </p>
 
 [Main page](https://github.com/udcm-su/heat-diffusion-1D)
