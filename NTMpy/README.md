@@ -1,4 +1,4 @@
-# Two/ Three Temperature model solver 
+# NTMpy solver
 
 ### Introduction
 The NTMpy software combines routines which allow the user to solve parabolic differential equations. After being subject to an external stimulus, e.g. a laser pulse, the diffusion dynamics of e.g. heat are modeled for up to three coupled systems in multiple piece wise homogeneous one dimensional layers. 
