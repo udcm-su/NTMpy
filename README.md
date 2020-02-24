@@ -7,6 +7,8 @@
 
 #### To update to lates version:     `pip install --upgrade NTMpy`
 
+Information and citation refere to [NTMpy: An open source package for solving coupled parabolic differential equations in the framework of the three-temperature model](https://arxiv.org/abs/2002.04559) paper.
+
 Further information on the solver package itself can be found here: [NTMpy](https://github.com/udcm-su/heat-diffusion-1D/tree/master/NTMpy).
 
 Documentation and example sessions can be found in the [Wiki](https://github.com/udcm-su/heat-diffusion-1D/wiki).
@@ -60,6 +62,9 @@ You can directly contact us via mail: [Lukas Alber](mailto:lukas.alber@fysik.su.
 
 
 #### Cite 
+
+[NTMpy: An open source package for solving coupled parabolic differential equations in the framework of the three-temperature model](https://arxiv.org/abs/2002.04559)
+
    <p align="center"> 
    <img src="https://zenodo.org/badge/158247812.svg" width="300" height="30" />   
    </p>
