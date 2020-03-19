@@ -62,15 +62,15 @@ You can directly contact us via mail: [Lukas Alber](mailto:lukas.alber@fysik.su.
 
 
 #### Cite 
-´
-@misc{alber2020ntmpy,
+
+`@misc{alber2020ntmpy,
     title={NTMpy: An open source package for solving coupled parabolic differential equations in the framework of the three-temperature model},
     author={Lukas Alber and Valentino Scalera and Vivek Unikandanunni and Daniel Schick and Stefano Bonetti},
     year={2020},
     eprint={2002.04559},
     archivePrefix={arXiv},
     primaryClass={cond-mat.other}
-}´
+}`
 
 
 
