@@ -62,12 +62,15 @@ You can directly contact us via mail: [Lukas Alber](mailto:lukas.alber@fysik.su.
 
 
 #### Cite 
-
-[NTMpy: An open source package for solving coupled parabolic differential equations in the framework of the three-temperature model](https://arxiv.org/abs/2002.04559)
-
-   <p align="center"> 
-   <img src="https://zenodo.org/badge/158247812.svg" width="300" height="30" />   
-   </p>
+´
+@misc{alber2020ntmpy,
+    title={NTMpy: An open source package for solving coupled parabolic differential equations in the framework of the three-temperature model},
+    author={Lukas Alber and Valentino Scalera and Vivek Unikandanunni and Daniel Schick and Stefano Bonetti},
+    year={2020},
+    eprint={2002.04559},
+    archivePrefix={arXiv},
+    primaryClass={cond-mat.other}
+}´
 
 
 
