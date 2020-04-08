@@ -34,7 +34,7 @@ The equation under consideration is:
   A sketch of the model: 
   
   <p align="center">
-  <img src=" https://github.com/udcm-su/NTMpy/blob/master/Pictures/ThreeTMscetch.png" width="120" height="120" />
+  <img src="https://github.com/udcm-su/NTMpy/blob/master/Pictures/ThreeTMscetch.png" width="420" height="320" />
   </p>
  
  Our approach is to use a combination of **finite elements** (B-Splines) to approximate the derivation in space and **Explicit Euler** to approximate the evolution in time.
