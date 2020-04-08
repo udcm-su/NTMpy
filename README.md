@@ -32,7 +32,11 @@ The equation under consideration is:
   are the respective temperatures of the electron lattice abd spin system with respect to space *x* and time *t*. The superscripts  *L* and *E* indicate whether a parameter belongs to the electron (E) lattice (L) or spin (S) system and the sub index *i* denotes to which layer the parameter belongs.
   
   A sketch of the model: 
-
+  
+  <p align="center">
+  <img src=" https://github.com/udcm-su/NTMpy/blob/master/Pictures/ThreeTMscetch.png" width="120" height="120" />
+  </p>
+ 
  Our approach is to use a combination of **finite elements** (B-Splines) to approximate the derivation in space and **Explicit Euler** to approximate the evolution in time.
  To stay within the **stability** region of the Explicit Euler algorithm, a well suited time step is automatically computed.
  
