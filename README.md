@@ -15,11 +15,11 @@ Documentation and example sessions can be found in the [Wiki](https://github.com
 
 ------------------------------------------------------------------------------------------------------------------
 
-This is a code providing a solution to the heat diffusion in a 1D structure in a 2-temperature model approximation.
+This is a code providing a solution to the heat diffusion in a 1D structure in a 3-temperature model approximation.
 
 We consider:
 * Material comprising piecewise homogeneous layers
-* Heating of electron system with an energy source with Gaussian shape (i.e. an ultrashort laser pulse)
+* Heating of electron system with an energy source with Gaussian or custom shape (i.e. an ultrashort laser pulse)
 * Three temperature model: electron, lattice and spin systems are considered and coupled
 * Transfer Matrix Method to account for local absorbed energy in the multi layer material
 
@@ -30,6 +30,8 @@ The equation under consideration is:
  where *C* = specific heat, *k* = conductivity, *G* is the coupling constant between the two systems (Electron and Lattice)
   <img src="https://github.com/udcm-su/heat-diffusion-1D/blob/Developer/Pictures/phiE.png" width="30" height="20" /> and <img src="https://github.com/udcm-su/heat-diffusion-1D/blob/Developer/Pictures/phiL.png" width="30" height="20" /> 
   are the respective temperatures of the electron lattice abd spin system with respect to space *x* and time *t*. The superscripts  *L* and *E* indicate whether a parameter belongs to the electron (E) lattice (L) or spin (S) system and the sub index *i* denotes to which layer the parameter belongs.
+  
+  A sketch of the model: 
 
  Our approach is to use a combination of **finite elements** (B-Splines) to approximate the derivation in space and **Explicit Euler** to approximate the evolution in time.
  To stay within the **stability** region of the Explicit Euler algorithm, a well suited time step is automatically computed.
